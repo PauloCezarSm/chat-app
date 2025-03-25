@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  php:
+    image: php:8.1-apache
+    container_name: chat-php
+    volumes:
+      - ./php:/var/www/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+  node:
+    build:
+      context: ./node
+    container_name: chat-node
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./node:/usr/src/app
+    command: npm start
+
+  db:
+    image: mysql:5.7
+    container_name: chat-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: chat_app
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+volumes:
+  db_data:
+    driver: local
